@@ -3,6 +3,7 @@ import { lib } from "./lib.ts";
 
 class Julia {
   #basemodule = lib.jl_base_module;
+  #mainmodule = lib.jl_main_module;
   constructor() {
     lib.jl_init();
   }
@@ -18,7 +19,7 @@ class Julia {
       case 0:
         throw new Error("No function passed to call");
       case 1:
-        return lib.jl_call(args[0]);
+        return lib.jl_call0(args[0]);
       case 2:
         return lib.jl_call1(args[0], args[1]);
       case 3:
@@ -29,12 +30,43 @@ class Julia {
   }
 
   getFunction(name: string) {
+    return juliaFunction(lib.jl_eval_string(cstr(name)));
+  }
+
+  getFunctionPointer(name: string) {
     return lib.jl_eval_string(cstr(name));
   }
 
   close(code = 0) {
     lib.jl_atexit_hook(code);
   }
+
+  get exception() {
+    return lib.jl_exception_occurred() === null
+      ? null
+      : new Deno.UnsafePointerView(
+        lib.jl_typeof_str(lib.jl_exception_occurred())!,
+      ).getCString();
+  }
+}
+
+function juliaFunction(ptr: Deno.PointerValue) {
+  return (...args: Deno.PointerValue[]) => {
+    switch (args.length) {
+      case 0:
+        return lib.jl_call0(ptr);
+      case 1:
+        return lib.jl_call1(ptr, args[0]);
+      case 2:
+        return lib.jl_call2(ptr, args[0], args[1]);
+      default:
+        throw new Error("Too many arguments passed to call");
+    }
+  };
+}
+
+export function symbol(value: string) {
+  return lib.jl_symbol(cstr(value));
 }
 
 export function f64<T extends Deno.PointerValue | number>(
@@ -132,8 +164,8 @@ export function u64<T extends Deno.PointerValue | number>(
 ): T extends number ? Deno.PointerValue
   : number {
   return (typeof ptrOrValue == "number"
-    ? lib.jl_box_uint64(ptrOrValue)!
-    : lib.jl_unbox_uint64(ptrOrValue)!) as T extends number ? Deno.PointerValue
+    ? lib.jl_box_uint64(ptrOrValue!)!
+    : lib.jl_unbox_uint64(ptrOrValue!)!) as T extends number ? Deno.PointerValue
       : number;
 }
 

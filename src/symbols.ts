@@ -15,6 +15,22 @@ export const SYMBOLS = {
     parameters: ["pointer"],
     result: "f64",
   },
+  jl_symbol: {
+    parameters: ["buffer"],
+    result: "pointer",
+  },
+  jl_set_global: {
+    parameters: ["pointer", "pointer", "i32"],
+    result: "pointer",
+  },
+  jl_typeof_str: {
+    parameters: ["pointer"],
+    result: "buffer",
+  },
+  jl_exception_occurred: {
+    parameters: [],
+    result: "pointer",
+  },
   jl_unbox_float32: {
     parameters: ["pointer"],
     result: "f32",
@@ -99,11 +115,15 @@ export const SYMBOLS = {
     parameters: ["bool"],
     result: "pointer",
   },
-  // jl_get_function: {
-  //   parameters: ["pointer", "buffer"],
-  //   result: "pointer",
-  // },
+  jl_box_char: {
+    parameters: ["i8"],
+    result: "pointer",
+  },
   jl_call: {
+    parameters: ["pointer", "pointer", "i32"],
+    result: "pointer",
+  },
+  jl_call0: {
     parameters: ["pointer"],
     result: "pointer",
   },
@@ -115,12 +135,18 @@ export const SYMBOLS = {
     parameters: ["pointer", "pointer", "pointer"],
     result: "pointer",
   },
+  jl_call3: {
+    parameters: ["pointer", "pointer", "pointer", "pointer"],
+    result: "pointer",
+  },
+
   jl_base_module: {
     name: "jl_base_module",
     type: "pointer",
   },
-  jl_call3: {
-    parameters: ["pointer", "pointer", "pointer", "pointer"],
-    result: "pointer",
+
+  jl_main_module: {
+    name: "jl_base_module",
+    type: "pointer",
   },
 } as const;
