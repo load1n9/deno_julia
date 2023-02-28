@@ -1,3 +1,9 @@
-import { julia } from "./mod.ts";
+import { f32, julia } from "./mod.ts";
 
-julia.run("print(sqrt(4.0))")
+const sqrt = julia.getFunction("sqrt");
+
+console.log(
+  f32(
+    julia.call(sqrt, f32(4.0)),
+  ),
+);
