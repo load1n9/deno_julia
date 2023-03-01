@@ -20,7 +20,7 @@ export const SYMBOLS = {
     result: "pointer",
   },
   jl_set_global: {
-    parameters: ["pointer", "pointer", "i32"],
+    parameters: ["pointer", "pointer", "pointer"],
     result: "pointer",
   },
   jl_typeof_str: {
@@ -120,7 +120,7 @@ export const SYMBOLS = {
     result: "pointer",
   },
   jl_call: {
-    parameters: ["pointer", "pointer", "i32"],
+    parameters: ["pointer", "buffer", "i32"],
     result: "pointer",
   },
   jl_call0: {

@@ -1,5 +1,5 @@
 {
   "tasks": {
-    "example_sqrt": "deno run -A --unstable examples/sqrt.ts"
+    "example_basic": "deno run -A --unstable examples/basic.ts"
   }
 }

@@ -37,6 +37,10 @@ class Julia {
     return lib.jl_eval_string(cstr(name));
   }
 
+  setGlobal(symbol: Deno.PointerValue, value: Deno.PointerValue) {
+    lib.jl_set_global(this.#mainmodule, symbol, value);
+  }
+
   close(code = 0) {
     lib.jl_atexit_hook(code);
   }
@@ -51,18 +55,14 @@ class Julia {
 }
 
 function juliaFunction(ptr: Deno.PointerValue) {
-  return (...args: Deno.PointerValue[]) => {
-    switch (args.length) {
-      case 0:
-        return lib.jl_call0(ptr);
-      case 1:
-        return lib.jl_call1(ptr, args[0]);
-      case 2:
-        return lib.jl_call2(ptr, args[0], args[1]);
-      default:
-        throw new Error("Too many arguments passed to call");
-    }
-  };
+  return (...args: Deno.PointerValue[]) =>
+    lib.jl_call(
+      ptr,
+      BigUint64Array.of(
+        ...args.map((v) => BigInt(Deno.UnsafePointer.value(v))),
+      ),
+      args.length,
+    );
 }
 
 export function symbol(value: string) {
